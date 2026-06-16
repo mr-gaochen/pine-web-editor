@@ -1,0 +1,6 @@
+@import "tailwindcss";
+
+/* Monaco editor needs full height in its container */
+.monaco-editor {
+  height: 100% !important;
+}
