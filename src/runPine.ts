@@ -56,6 +56,10 @@ export async function runPine(
 ): Promise<RunResult> {
   const entries = candlesToKlineEntries(candles, period);
   const pineTS = new PineTS(entries.map((e) => e.kline));
+
+  // 回测模式：每根 K 线都触发 alert
+  pineTS.setAlertMode("all");
+
   const result = await pineTS.run(code);
   const overlay: boolean = result.indicator?.overlay ?? true;
   const outputs = result.plots || {};
