@@ -93,8 +93,20 @@ export async function runPine(
 
       const isSignal =
         points.length > 0 && points.every((p) => p.value === 0 || p.value === 1);
-      const markerPosition: "aboveBar" | "belowBar" =
-        /sell|bear|short|down/i.test(key) ? "aboveBar" : "belowBar";
+
+      // 从 PineTS plotshape 的 options.location 判断买卖方向
+      // PineTS 将 location 存在 rawPlot.options.location，对应 Pine Script 中
+      // location=location.abovebar（卖出） / location=location.belowbar（买入）
+      let markerPosition: "aboveBar" | "belowBar" = "belowBar";
+      if (rawPlot && typeof rawPlot === "object") {
+        const rp = rawPlot as Record<string, unknown>;
+        const opts = (rp.options ?? rp) as Record<string, unknown> | undefined;
+        if (opts && typeof opts.location === "string") {
+          markerPosition = opts.location.toLowerCase().includes("abovebar")
+            ? "aboveBar"
+            : "belowBar";
+        }
+      }
       const finalPoints = isSignal ? points.filter((p) => p.value !== 0) : points;
 
       if (finalPoints.length > 0) {
